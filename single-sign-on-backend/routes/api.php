@@ -30,6 +30,6 @@ Route::group(['prefix' => 'v1', 'middleware' => ['external_logging']], function 
 });
 
 // 內部 API
-Route::group(['prefix' => 'v1/internal', 'middleware' => ['internal_logging']], function () {
+Route::group(['prefix' => 'v1/internal', 'middleware' => ['internal_logging', 'internal.verify']], function () {
     Route::get('/user', [AuthenticateController::class, 'internalSystemAuthorization']);
 });

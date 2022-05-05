@@ -66,5 +66,6 @@ class Kernel extends HttpKernel
         'auth_api' => \App\Http\Middleware\VerifyAccessToken::class,
         'external_logging' => \App\Http\Middleware\LoggingExternalActions::class,
         'internal_logging' => \App\Http\Middleware\LoggingInternalActions::class,
+        'internal.verify' => \App\Http\Middleware\InternalSystemVerification::class,
     ];
 }

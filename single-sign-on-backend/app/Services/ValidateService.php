@@ -28,7 +28,7 @@ class ValidateService
      * 檢查系統是否存在
      *
      * @param string $system_name 系統名稱
-     * @return bool
+     * @return \Illuminate\Database\Eloquent\Model
      *
      * @throws \App\Exceptions\EntityNotFoundException
      */
