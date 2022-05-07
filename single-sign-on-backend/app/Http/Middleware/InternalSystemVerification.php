@@ -89,7 +89,7 @@ class InternalSystemVerification
             return $this->response('驗證失敗', null, 401);
         }
 
-        $now = now()->format('YmdHis');
+        $now = now()->toIso8601String();
         $header = 'Bearer '.$this->encryptPayloads('2|single_sign_on|'.$now);
         $response->header('Authorization', $header);
 

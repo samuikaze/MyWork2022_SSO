@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Exceptions\EntityNotFoundException;
 use App\Models\RegisteredSystem;
 use App\Repositories\Abstracts\BaseRepository;
+use Illuminate\Database\Eloquent\Model;
 
 class SystemRepository extends BaseRepository
 {
@@ -28,7 +29,7 @@ class SystemRepository extends BaseRepository
      *
      * @throws \App\Exceptions\EntityNotFoundException
      */
-    public function findValidRegisteredSystem(string $system_name)
+    public function findValidRegisteredSystem(string $system_name): Model
     {
         $system = $this->model
             ->where('registered_systems.valid', 1)

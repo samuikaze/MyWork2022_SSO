@@ -274,7 +274,7 @@ class AuthenticateService
      *
      * @throws \InvalidArgumentException
      */
-    protected function generateJWTHeader(bool $want_original = false): array
+    protected function generateJWTHeader(bool $want_original = false): mixed
     {
         $algorithm = env('JWT_SECRET_JWT_ALGORITHM');
         if (is_null($algorithm)) {
@@ -303,7 +303,7 @@ class AuthenticateService
      * @param bool $want_original 是否取得原始資料
      * @return array<string,string>|string
      */
-    protected function generateJWTPayloads(array $payloads, bool $want_original = false): array
+    protected function generateJWTPayloads(array $payloads, bool $want_original = false): mixed
     {
         $fixed_payloads = [];
         $payloads = array_merge($payloads, $fixed_payloads);
