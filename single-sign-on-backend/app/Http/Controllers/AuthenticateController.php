@@ -85,7 +85,7 @@ class AuthenticateController extends Controller
             'remember' => false,
         ]);
 
-        return $this->login($request);
+        return $this->signIn($request);
     }
 
     /**
@@ -148,7 +148,7 @@ class AuthenticateController extends Controller
 
         $this->authenticate_service->signOut($bearer_token);
 
-        return $this->response(null, []);
+        return $this->response();
     }
 
     /**
