@@ -45,10 +45,15 @@ class LoggingExternalActions
         /** @var \Illuminate\Http\JsonResponse $response */
         $response = $next($request);
 
-        [
-            'status' => $status,
-            'data' => $data
-        ] = $response->getOriginalContent();
+        if (! is_null($response)) {
+            [
+                'status' => $status,
+                'data' => $data
+            ] = $response->getOriginalContent();
+        } else {
+            $status = 0;
+            $data = null;
+        }
 
         $method = $request->method();
         $ip = $request->ip();

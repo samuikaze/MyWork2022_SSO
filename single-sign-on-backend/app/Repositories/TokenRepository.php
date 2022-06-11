@@ -43,18 +43,18 @@ class TokenRepository extends BaseRepository
      */
     public function findAccessToken(int $user_id, int $access_token_id, string $access_token): Model
     {
-        $access_token = $this->model
+        $access_token_record = $this->model
             ->select('access_tokens.*')
             ->where('access_tokens.user_id', $user_id)
-            ->where('access_token.access_token_id', $access_token_id)
-            ->where('access_token.access_token')
+            ->where('access_tokens.access_token_id', $access_token_id)
+            ->where('access_tokens.access_token', $access_token)
             ->first();
 
-        if (is_null($access_token)) {
+        if (is_null($access_token_record)) {
             throw new EntityNotFoundException('找不到該存取權杖');
         }
 
-        return $access_token;
+        return $access_token_record;
     }
 
     /**

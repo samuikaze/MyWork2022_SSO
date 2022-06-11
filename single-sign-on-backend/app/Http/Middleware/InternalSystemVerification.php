@@ -8,6 +8,7 @@ use App\Exceptions\InvalidPayloadException;
 use App\Services\ValidateService;
 use App\Traits\ResponseFormatter;
 use Closure;
+use Exception;
 use Illuminate\Http\Request;
 use InvalidArgumentException;
 
@@ -134,7 +135,7 @@ class InternalSystemVerification
      *
      * @see https://gist.github.com/Oranzh/2520823f9d1cea603e60b8e8f3fe1d36#file-with_bcrypt_password_hash-md
      */
-    protected function decryptPayloads(string $encrypted): mixed
+    protected function decryptPayloads(string $encrypted)
     {
         // 解密
         $decrypted = base64_decode($encrypted);

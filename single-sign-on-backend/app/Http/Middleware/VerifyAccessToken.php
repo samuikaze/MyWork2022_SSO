@@ -5,8 +5,8 @@ namespace App\Http\Middleware;
 use App\Traits\ResponseFormatter;
 use App\Services\AuthenticateService;
 use Closure;
+use Exception;
 use Illuminate\Http\Request;
-use InvalidArgumentException;
 
 class VerifyAccessToken
 {
@@ -43,7 +43,7 @@ class VerifyAccessToken
 
         try {
             $this->authenticate_service->verifyJWToken($bearer_token);
-        } catch (InvalidArgumentException $e) {
+        } catch (Exception $e) {
             return $this->response('驗證失敗', null, 401);
         }
 

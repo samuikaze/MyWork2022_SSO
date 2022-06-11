@@ -27,6 +27,12 @@ Route::group(['prefix' => 'v1', 'middleware' => ['external_logging']], function 
         // 登出
         Route::post('/user/signout', [AuthenticateController::class, 'signOut']);
     });
+    // 忘記密碼
+    Route::post('/forget/password', [AuthenticateController::class, 'forgetPassword']);
+    // 取得重設密碼權杖資訊
+    Route::get('/reset/password/token', [AuthenticateController::class, 'getResetPasswordInformation']);
+    // 重設密碼
+    Route::post('/reset/password', [AuthenticateController::class, 'resetPassword']);
 });
 
 // 內部 API

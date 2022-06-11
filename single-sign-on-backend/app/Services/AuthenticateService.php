@@ -127,11 +127,23 @@ class AuthenticateService
      *
      * @param string $bearer_token 存取權杖
      * @return void
+     *
+     * @throws \InvalidArgumentException
      */
     public function signOut(string $bearer_token): void
     {
-        [$account, $session, $first_signin] = $this->decodeAccessToken($bearer_token);
-        [$access_token_id, $access_token] = $session;
+
+        [
+            'user_account' => $account,
+            'session' => $session,
+            'signed_in_at' => $first_signin
+        ] = $this->decodeAccessToken($bearer_token);
+
+        [
+            'access_token_id' => $access_token_id,
+            'access_token' => $access_token,
+        ] = $session;
+
         unset($first_signin, $session);
 
         try {
@@ -185,8 +197,17 @@ class AuthenticateService
             throw new InvalidArgumentException('驗證失敗');
         }
 
-        [$account, $session, $first_signin] = $this->decodeAccessToken($jwt_token);
-        [$access_token_id, $access_token] = $session;
+        [
+            'user_account' => $account,
+            'session' => $session,
+            'signed_in_at' => $first_signin
+        ] = $this->decodeAccessToken($jwt_token);
+
+        [
+            'access_token_id' => $access_token_id,
+            'access_token' => $access_token,
+        ] = $session;
+
         unset($session, $first_signin);
 
         $user = $this->user_repository->findUserByAccount($account);
@@ -221,6 +242,7 @@ class AuthenticateService
         $secret = $this->generateJWTSecret($headers, $payloads);
 
         $access_token = $headers.'.'.$payloads.'.'.$secret;
+        $access_token = base64_encode($access_token);
 
         return $access_token;
     }
@@ -235,6 +257,7 @@ class AuthenticateService
      */
     protected function decodeAccessToken(string $jwt_token): array
     {
+        $jwt_token = base64_decode($jwt_token);
         $jwt_token = explode('.', $jwt_token);
         if (count($jwt_token) != 3) {
             throw new InvalidArgumentException('驗證失敗');
@@ -248,8 +271,8 @@ class AuthenticateService
         }
         unset($calculated_secret, $secret);
 
-        $headers = $this->base64_url_decode($headers);
-        $payloads = $this->base64_url_decode($payloads);
+        $headers = base64_url_decode($headers);
+        $payloads = base64_url_decode($payloads);
 
         if ($headers === false || $payloads === false) {
             throw new InvalidArgumentException('驗證失敗');
@@ -274,7 +297,7 @@ class AuthenticateService
      *
      * @throws \InvalidArgumentException
      */
-    protected function generateJWTHeader(bool $want_original = false): mixed
+    protected function generateJWTHeader(bool $want_original = false)
     {
         $algorithm = env('JWT_SECRET_JWT_ALGORITHM');
         if (is_null($algorithm)) {
@@ -291,7 +314,7 @@ class AuthenticateService
         }
 
         $headers = json_encode($headers);
-        $headers = $this->base64_url_encode($headers);
+        $headers = base64_url_encode($headers);
 
         return $headers;
     }
@@ -303,7 +326,7 @@ class AuthenticateService
      * @param bool $want_original 是否取得原始資料
      * @return array<string,string>|string
      */
-    protected function generateJWTPayloads(array $payloads, bool $want_original = false): mixed
+    protected function generateJWTPayloads(array $payloads, bool $want_original = false)
     {
         $fixed_payloads = [];
         $payloads = array_merge($payloads, $fixed_payloads);
@@ -313,7 +336,7 @@ class AuthenticateService
         }
 
         $payloads = json_encode($payloads);
-        $payloads = $this->base64_url_encode($payloads);
+        $payloads = base64_url_encode($payloads);
 
         return $payloads;
     }
@@ -343,47 +366,6 @@ class AuthenticateService
 
         $body = $header.'.'.$payloads;
 
-        return hash_hmac($algorithm, $body, $secret, true);
-    }
-
-    /**
-     * Base64 URL 編碼
-     *
-     * @param string $data 原始字串
-     * @return string
-     *
-     * @throws \InvalidArgumentException
-     */
-    protected function base64_url_encode(string $data): string
-    {
-        $encoded = base64_encode($data);
-
-        if ($encoded === false) {
-            throw new InvalidArgumentException('Base64 編碼失敗');
-        }
-
-        $encoded = str_replace('+', '-', $encoded);
-        $encoded = str_replace('/', '_', $encoded);
-        $encoded = rtrim($encoded, '=');
-
-        return $encoded;
-    }
-
-    /**
-     * Base64 URL 解碼
-     *
-     * @param string $url 原始字串
-     * @param bool $strict
-     * @return string
-     *
-     * @throws \InvalidArgumentException
-     */
-    protected function base64_url_decode(string $url, bool $strict = false): string
-    {
-        $decoded = str_replace('-', '+', $url);
-        $decoded = str_replace('+', '/', $decoded);
-        $decoded = base64_decode($decoded, $strict);
-
-        return $decoded;
+        return hash_hmac(strtolower($algorithm), $body, $secret, false);
     }
 }
