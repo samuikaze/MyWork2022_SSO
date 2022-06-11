@@ -1,0 +1,14 @@
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">登出帳號</h5>
+    <div *ngIf="signInCurrently">
+      <h3 class="text-center text-danger">您確定要登出嗎？</h3>
+      <div class="text-center mt-5">
+        <button class="btn btn-danger" (click)="submit()">登出</button>
+      </div>
+    </div>
+    <div *ngIf="!signInCurrently">
+      <h6 class="card-subtitle mb-4 text-danger">您未登入系統，請先登入後再進行此操作</h6>
+    </div>
+  </div>
+</div>

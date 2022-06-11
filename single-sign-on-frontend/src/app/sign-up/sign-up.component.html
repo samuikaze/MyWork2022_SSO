@@ -1,0 +1,34 @@
+<div class="card">
+  <div class="card-body">
+    <h5 class="card-title">註冊帳號</h5>
+    <div *ngIf="!signInCurrently">
+      <h6 class="card-subtitle mb-4 text-muted">請確實填好下方表單，以利後續註冊作業</h6>
+      <div class="mb-3">
+        <label for="account" class="form-label">帳號</label>
+        <input type="text" class="form-control" id="account" [(ngModel)]="account" placeholder="請輸入帳號" />
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">密碼</label>
+        <input type="password" class="form-control" id="password" [(ngModel)]="password" placeholder="請輸入密碼" />
+      </div>
+      <div class="mb-3">
+        <label for="passwordConfirmation" class="form-label">確認密碼</label>
+        <input type="password" class="form-control" id="passwordConfirmation" [(ngModel)]="passwordConfirmation" placeholder="請再次輸入您的密碼" />
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label">電子郵件地址</label>
+        <input type="email" class="form-control" id="email" [(ngModel)]="email" placeholder="請輸入電子郵件地址" />
+      </div>
+      <div class="mb-3">
+        <label for="name" class="form-label">暱稱</label>
+        <input type="text" class="form-control" id="name" [(ngModel)]="name" placeholder="請輸入暱稱" />
+      </div>
+      <div class="text-center">
+        <button class="btn btn-success" (click)="submit()" [disabled]="verifySubmitable()">送出</button>
+      </div>
+    </div>
+    <div *ngIf="signInCurrently">
+      <h6 class="card-subtitle mb-4 text-danger">您已經登入系統，請先登出系統後再進行註冊帳號</h6>
+    </div>
+  </div>
+</div>
