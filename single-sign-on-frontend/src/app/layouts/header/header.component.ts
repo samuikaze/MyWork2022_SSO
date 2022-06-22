@@ -12,7 +12,8 @@ export class HeaderComponent implements OnInit {
   constructor(private commonService: CommonService) { }
 
   ngOnInit(): void {
-    this.signInCurrently = this.commonService.checkIfSignInCurrently();
+    this.commonService.checkIfSignInCurrently()
+      .then(auth => this.signInCurrently = auth);
   }
 
 }

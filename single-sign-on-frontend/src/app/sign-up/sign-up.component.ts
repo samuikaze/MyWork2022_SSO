@@ -3,6 +3,7 @@ import { RegisterUser } from '../abstracts/register-user';
 import { RequestService } from '../services/request.service';
 import { SignInResponse } from '../abstracts/data/signin-response';
 import { CommonService } from '../services/common.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sign-up',
@@ -19,11 +20,19 @@ export class SignUpComponent implements OnInit {
   public signInCurrently = false;
   constructor(
     private commonService: CommonService,
-    private requestService: RequestService
+    private requestService: RequestService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
-    this.signInCurrently = this.commonService.checkIfSignInCurrently();
+    this.commonService.setTitle("註冊");
+
+    this.commonService.checkIfSignInCurrently()
+      .then(auth => this.signInCurrently = auth);
+  }
+
+  public signin(): void {
+    this.router.navigateByUrl("/signin");
   }
 
   public verifySubmitable(): boolean {

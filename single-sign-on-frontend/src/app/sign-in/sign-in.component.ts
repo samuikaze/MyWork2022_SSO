@@ -1,4 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { SignInResponse } from '../abstracts/data/signin-response';
 import { CommonService } from '../services/common.service';
 import { RequestService } from '../services/request.service';
@@ -16,11 +17,15 @@ export class SignInComponent implements OnInit {
   public signInCurrently = false;
   constructor(
     private commonService: CommonService,
-    private requestService: RequestService
+    private requestService: RequestService,
+    private router: Router
   ) { }
 
   ngOnInit(): void {
-    this.signInCurrently = this.commonService.checkIfSignInCurrently();
+    this.commonService.setTitle("登入");
+
+    this.commonService.checkIfSignInCurrently()
+      .then(auth => this.signInCurrently = auth);
   }
 
   public verifySubmitable(): boolean {
@@ -28,6 +33,10 @@ export class SignInComponent implements OnInit {
       this.account != null &&
       this.password != null
     );
+  }
+
+  public signup(): void {
+    this.router.navigateByUrl("/signup");
   }
 
   public submit(): void {

@@ -7,6 +7,7 @@ import { ENV } from 'src/environments/env';
 import { SignInResponse } from '../abstracts/data/signin-response';
 import { SingInUser } from '../abstracts/signin-user';
 import { SignOutResponse } from '../abstracts/data/signout-response';
+import { AuthenticationResponse } from '../abstracts/data/authentication-response';
 
 @Injectable({
   providedIn: 'root'
@@ -37,13 +38,7 @@ export class RequestService {
 
     return this.http.post<SignInResponse>(url, registerUser)
       .pipe(
-        catchError((error: HttpErrorResponse) => {
-          console.error(error);
-
-          let msg = error.error.message;
-
-          return throwError(() => new Error(msg));
-        })
+        catchError((error: HttpErrorResponse) => this.handleError(error))
       );
   }
 
@@ -52,13 +47,7 @@ export class RequestService {
 
     return this.http.post<SignInResponse>(url, signInUser)
       .pipe(
-        catchError((error: HttpErrorResponse) => {
-          console.log(error);
-
-          let msg = error.error.message;
-
-          return throwError(() => new Error(msg));
-        })
+        catchError((error: HttpErrorResponse) => this.handleError(error))
       );
   }
 
@@ -70,32 +59,27 @@ export class RequestService {
 
     return this.http.post<SignOutResponse>(url, {}, options)
       .pipe(
-        catchError((error: HttpErrorResponse) => {
-          console.log(error);
-
-          let msg = error.error.message;
-
-          return throwError(() => new Error(msg));
-        })
+        catchError((error: HttpErrorResponse) => this.handleError(error))
       );
   }
 
-  /**
-   * Handle Http operation that failed.
-   * Let the app continue.
-   * @param operation - name of the operation that failed
-   * @param result - optional value to return as the observable result
-   */
-   private handleError<T>(operation = 'operation', result?: T) {
-    return (error: any): Observable<T> => {
-      // TODO: send the error to remote logging infrastructure
-      console.log(error);  // log to console instead
-
-      // TODO: better job of transforming error for user consumption
-      console.log(`${operation} failed: ${error.message}`);
-
-      // Let the app keep running by returning an empty result.
-      return of(result as T);
+  public checkAuthenticateStatus(token: string): Observable<AuthenticationResponse> {
+    const url = `${this.backendURI}/api/v1/user`;
+    const options = {
+      headers: new HttpHeaders({ "Authorization": `Bearer ${token}`})
     };
+
+    return this.http.get<AuthenticationResponse>(url, options)
+      .pipe(
+        catchError((error: HttpErrorResponse) => this.handleError(error))
+      );
+  }
+
+  private handleError(error: HttpErrorResponse) {
+    console.log(error);
+
+    let msg = error.error.message;
+
+    return throwError(() => new Error(msg));
   }
 }

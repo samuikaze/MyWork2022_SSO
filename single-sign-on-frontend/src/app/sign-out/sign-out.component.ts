@@ -19,7 +19,10 @@ export class SignOutComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.signInCurrently = this.commonService.checkIfSignInCurrently();
+    this.commonService.setTitle("登出");
+
+    this.commonService.checkIfSignInCurrently()
+      .then(auth => this.signInCurrently = auth);
   }
 
   public submit(): void {
