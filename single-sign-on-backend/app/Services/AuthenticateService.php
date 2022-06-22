@@ -224,7 +224,7 @@ class AuthenticateService
             $this->token_repository->safeUpdateRecord($access_token->id, ['last_used_at' => now()]);
         }
 
-        return $user->only('id', 'name', 'account');
+        return $user->only('id', 'name', 'account', 'email', 'email_verified_at', 'created_at', 'updated_at', 'deleted_at');
     }
 
     /**

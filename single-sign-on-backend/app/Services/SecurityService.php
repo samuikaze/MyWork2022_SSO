@@ -5,7 +5,11 @@ namespace App\Services;
 use App\Exceptions\EntityNotFoundException;
 use App\Mail\ResetPassword;
 use App\Repositories\PasswordRepository;
+use App\Repositories\SystemVariableRepository;
+use App\Repositories\TokenRepository;
 use App\Repositories\UserRepository;
+use Carbon\Carbon;
+use DateTimeZone;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -19,6 +23,20 @@ class SecurityService
      * @var \App\Repositories\PasswordRepository
      */
     protected $password_repository;
+
+    /**
+     * SystemVariableRepository
+     *
+     * @var \App\Repositories\SystemVariableRepository
+     */
+    protected $system_variable_repository;
+
+    /**
+     * TokenRepository
+     *
+     * @var \App\Repositories\TokenRepository
+     */
+    protected $token_repository;
 
     /**
      * UserRepository
@@ -38,14 +56,20 @@ class SecurityService
      * 建構方法
      *
      * @param \App\Repositories\PasswordRepository $password_repository
+     * @param \App\Repositories\SystemVariableRepository $system_variable_repository
+     * @param \App\Repositories\TokenRepository $token_repository
      * @param \App\Repositories\UserRepository $user_repository
      * @return void
      */
     public function __construct(
         PasswordRepository $password_repository,
+        SystemVariableRepository $system_variable_repository,
+        TokenRepository $token_repository,
         UserRepository $user_repository
     ) {
         $this->password_repository = $password_repository;
+        $this->system_variable_repository = $system_variable_repository;
+        $this->token_repository = $token_repository;
         $this->user_repository = $user_repository;
 
         $this->reset_pswd_thu_mail = env('RESET_PSWD_THROUGH_MAIL', true);
@@ -150,5 +174,30 @@ class SecurityService
         }
 
         return $user->only('id', 'email');
+    }
+
+    /**
+     * 清理過期權杖
+     *
+     * @return void
+     */
+    public function invokeExpiredTokens()
+    {
+        $var_name = 'EXPIRED_TOKENS_INVOKE_TIME';
+        $now = now()->format('Y-m-d H:i:s');
+        try {
+            $last_invoked = $this->system_variable_repository->getSystemVariable($var_name);
+            $last_invoked = Carbon::parse($last_invoked->value, 'UTC');
+            if ($last_invoked->diffInDays(now(), true) > 0) {
+                $this->token_repository->GC();
+                $this->system_variable_repository->setSystemVariable($var_name, $now);
+            }
+        } catch (EntityNotFoundException $e) {
+            $this->token_repository->GC();
+            $this->system_variable_repository->create([
+                'name' => $var_name,
+                'value' => $now,
+            ]);
+        }
     }
 }

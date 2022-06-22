@@ -258,6 +258,8 @@ class AuthenticateController extends Controller
             return $this->response($e->getMessage(), null, self::HTTP_UNAUTHORIZED);
         }
 
+        $this->security_service->invokeExpiredTokens();
+
         return $this->response(null, $user);
     }
 
@@ -284,6 +286,8 @@ class AuthenticateController extends Controller
         } catch (EntityNotFoundException | InvalidArgumentException $e) {
             return $this->response($e->getMessage(), null, self::HTTP_UNAUTHORIZED);
         }
+
+        $this->security_service->invokeExpiredTokens();
 
         $data = encrypt($user['id']);
 

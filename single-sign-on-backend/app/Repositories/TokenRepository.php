@@ -28,7 +28,7 @@ class TokenRepository extends BaseRepository
         $this->model = $access_token;
 
         $duration = (int) env('AUTHENTICATE_VALID_DURATION', 120);
-        $this->authenticate_valid_date = now()->addMinutes($duration);
+        $this->authenticate_valid_date = now()->subMinutes($duration);
     }
 
     /**
@@ -81,7 +81,10 @@ class TokenRepository extends BaseRepository
     public function GC(): void
     {
         $this->model
-            ->where('access_tokens.last_used_at', '<=', $this->authenticate_valid_date)
+            ->where(function ($query) {
+                $query->where('access_tokens.last_used_at', '<=', $this->authenticate_valid_date)
+                    ->orWhere('access_tokens.last_used_at');
+            })
             ->where('access_tokens.remember', 0)
             ->delete();
     }
