@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: single-sign-on-loadbalancer
+spec:
+  type: LoadBalancer
+  ports:
+  - name: single-sign-on-loadbalancer-port-name
+    port: 80
+    protocol: TCP
+  selector:
+    app: single-sign-on-load-balance

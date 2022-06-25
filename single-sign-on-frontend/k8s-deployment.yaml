@@ -1,0 +1,17 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: single-sign-on-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: single-sign-on
+    spec:
+      containers:
+        - name: single-sign-on
+          image: 127.0.0.1:5000/sso-frontend:latest
+          imagePullPolicy: Always
+          ports:
+          - containerPort: 19210
